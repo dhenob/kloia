@@ -39,7 +39,7 @@ metadata:
   namespace: argocd
 spec:
   source:
-    repoURL: https://github.com/yourusername/sockshop-gitops.git
+    repoURL: https://github.com/dhenob/kloia.git
     path: argocd/applications
   destination:
     server: https://kubernetes.default.svc
@@ -65,11 +65,11 @@ metadata:
   namespace: argocd
 spec:
   source:
-    repoURL: https://github.com/yourusername/sockshop-gitops.git
+    repoURL: https://github.com/dhenob/kloia.git
     path: microservices-demo/deploy/kubernetes/helm-chart
     helm:
       valueFiles:
-        - ../../../helm-values/sock-shop/values.yaml
+        - ../../../../helm-values/sock-shop/values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: sock-shop
@@ -87,7 +87,9 @@ Key fields:
 │   ├── root-app.yaml              # Root application definition
 │   └── applications/              # Directory containing child applications
 │       └── sock-shop-app.yaml     # Sock Shop application definition
-└── helm-values/                  # Directory containing Helm values
+├── dockerfiles/                   # Security-hardened Dockerfiles
+│   └── front-end/                 # Front-end service Dockerfile
+└── helm-values/                   # Directory containing Helm values
     └── sock-shop/
         └── values.yaml           # Values for Sock Shop Helm chart
 ```
@@ -109,4 +111,11 @@ Changes to this file in Git trigger ArgoCD to apply the updated configuration to
 2. Git webhook notifies ArgoCD of changes
 3. ArgoCD detects drift between desired state (Git) and actual state (cluster)
 4. ArgoCD applies changes to bring cluster state in sync with Git
-5. ArgoCD continues to monitor for drift and self-heals as needed 
+5. ArgoCD continues to monitor for drift and self-heals as needed
+
+## Security Considerations
+
+- ArgoCD runs with least privilege
+- All configurations are version controlled
+- Automated drift detection prevents unauthorized changes
+- Application manifests apply network policies and security contexts 

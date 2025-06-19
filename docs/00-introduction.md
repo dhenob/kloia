@@ -30,19 +30,20 @@ This project implements a secure CI/CD and GitOps workflow for the Sock Shop mic
 │   ├── root-app.yaml       # Root application (App of Apps pattern)
 │   └── applications/       # Child application definitions
 ├── dockerfiles/            # Secure Dockerfiles for components
+│   └── front-end/          # Front-end service with hardened configuration
 ├── helm-values/            # Helm chart values for different environments
-│   └── sock-shop/          
-├── microservices-demo/     # Original Sock Shop application source
+│   └── sock-shop/          # Sock Shop application values
 └── docs/                   # Comprehensive documentation
 ```
 
 ## Implementation Highlights
 
-- **Multi-stage Docker builds** for optimized and secure container images
+- **Security-hardened containers** based on official images with non-root users
 - **Trivy vulnerability scanning** integrated into the CI pipeline
 - **ArgoCD App of Apps pattern** for scalable application management
 - **Automated sync policies** for GitOps-driven deployments
 - **Self-healing capabilities** to maintain desired state
+- **CI pipeline resilience** with appropriate error handling
 
 ## Documentation
 
@@ -55,7 +56,10 @@ For detailed information, see:
 ## Getting Started
 
 1. Fork this repository
-2. Configure GitHub Secrets for Docker Hub access
+2. Configure GitHub Secrets for Docker Hub:
+   - `DOCKER_USERNAME`: Docker Hub username
+   - `DOCKER_PASSWORD`: Docker Hub access token
+   - `DOCKER_REPO`: Docker Hub repository name
 3. Set up ArgoCD in your OpenShift cluster
 4. Apply the root application manifest to ArgoCD
 5. Make changes to the Helm values file to trigger deployments 

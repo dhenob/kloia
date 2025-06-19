@@ -13,12 +13,13 @@ The CI/CD pipeline for the Sock Shop application is implemented using GitHub Act
 
 ### Build
 
-The build stage uses multi-stage Dockerfiles to:
-- Use minimal base images (Alpine)
-- Create small, efficient container images
-- Run containers as non-root users
-- Pin dependencies to specific versions
-- Follow other container hardening best practices
+The build stage:
+- Uses the official Sock Shop images as a base
+- Applies security hardening:
+  - Runs containers as non-root user (UID 10001)
+  - Uses minimal Alpine-based images
+  - Sets appropriate security contexts
+  - Implements health checks
 
 ### Security Scanning
 
@@ -26,7 +27,8 @@ The pipeline incorporates Trivy, a comprehensive vulnerability scanner that:
 - Scans container images for known vulnerabilities (CVEs)
 - Checks for configuration issues and security best practices
 - Generates SARIF reports viewable in the GitHub Security tab
-- Fails the pipeline on critical or high-severity vulnerabilities
+- Ignores unfixable vulnerabilities to reduce false positives
+- Includes fallbacks for resilient CI execution
 
 ### Push
 
@@ -61,4 +63,12 @@ To add or update secrets:
 - **Push to main/master**: Triggers build, scan, and push
 - **Pull requests to main/master**: Triggers build and scan only
 - **Tag creation (v*.*.*)**: Triggers build, scan, and push
-- **Manual dispatch**: Can be triggered manually via GitHub UI 
+- **Manual dispatch**: Can be triggered manually via GitHub UI
+
+## Error Handling
+
+The pipeline includes several error handling mechanisms:
+- Vulnerability scanning is set to continue even if issues are found
+- Debug steps to help diagnose problems
+- Fallback mechanisms for SARIF file creation
+- Local image tagging to ensure reliable scanning 

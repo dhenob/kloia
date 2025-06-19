@@ -10,6 +10,15 @@ To manually trigger the CI pipeline:
 4. Click "Run workflow"
 5. Select the branch to run against and click "Run workflow"
 
+## Monitoring CI Pipeline Results
+
+To monitor the CI pipeline results:
+
+1. Navigate to the "Actions" tab in your GitHub repository
+2. Find the latest workflow run and click on it
+3. View the logs of each step to diagnose any issues
+4. For successful runs, check Docker Hub to verify the image was pushed correctly
+
 ## Monitoring ArgoCD Sync Status
 
 ### Using ArgoCD UI
@@ -80,6 +89,18 @@ argocd app rollback sock-shop 2
 
 ## Handling Common Issues
 
+### CI Pipeline Failures
+
+If the CI pipeline fails:
+
+1. Check the GitHub Actions logs for the specific step that failed
+2. For image build failures, verify the Dockerfile syntax and paths
+3. For Trivy scan failures:
+   - Review the vulnerabilities found
+   - Update base images if needed
+   - Consider adjusting severity thresholds or ignoring unfixable vulnerabilities
+4. For push failures, verify Docker Hub credentials are set up correctly in GitHub Secrets
+
 ### Failed Container Security Scans
 
 If a container scan fails due to vulnerabilities:
@@ -117,4 +138,12 @@ If manual changes to the cluster are being reverted:
    
    # Re-enable auto-sync
    argocd app patch sock-shop --patch '{"spec": {"syncPolicy": {"automated": {"prune": true, "selfHeal": true}}}}' --type merge
-   ``` 
+   ```
+
+## Best Practices
+
+- Always store container images with version tags, never use `:latest`
+- Use semantic versioning for release tags
+- Regularly update base images to get security patches
+- Review and rotate Docker Hub access tokens periodically
+- Keep ArgoCD and GitOps configurations in a separate repository from application code 
