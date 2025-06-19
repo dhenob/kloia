@@ -10,12 +10,12 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/yourusername/sockshop-gitops.git
+    repoURL: https://github.com/dhenob/kloia.git
     targetRevision: HEAD
     path: microservices-demo/deploy/kubernetes/helm-chart
     helm:
       valueFiles:
-        - ../../../../app/helm-values/sock-shop/values.yaml
+        - ../../../../helm-values/sock-shop/values.yaml
       parameters:
         - name: "frontend.image.tag"
           value: "latest"

@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/yourusername/sockshop-gitops.git
+    repoURL: https://github.com/dhenob/kloia.git
     targetRevision: HEAD
     path: argocd/applications
   destination:
