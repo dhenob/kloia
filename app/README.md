@@ -2,6 +2,9 @@
 
 This repository contains a secure CI/CD and GitOps workflow implementation for the Sock Shop microservices demo application, leveraging GitHub Actions for CI, Docker Hub for image management, and ArgoCD for Kubernetes application deployment.
 
+## CI Pipeline Status
+Last updated: $(date)
+
 ## Repository Structure
 
 ```
