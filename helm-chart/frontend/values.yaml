@@ -2,7 +2,7 @@ replicaCount: 2
 
 image:
   repository: dhenob/kloia
-  tag: latest  # This will be updated by the CI/CD pipeline
+  tag: main  # This will be updated by the CI/CD pipeline
   pullPolicy: Always
 
 imagePullSecrets: []
