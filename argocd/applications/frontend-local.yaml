@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: frontend
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    app.kubernetes.io/part-of: sock-shop
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/dhenob/kloia.git
+    targetRevision: HEAD
+    path: helm-chart/frontend
+    helm:
+      values: |
+        # Override ingress settings for local development
+        ingress:
+          enabled: true
+          className: ""  # Use default ingress class available in Docker Desktop
+          hosts:
+            - host: frontend.local
+              paths:
+                - path: /
+                  pathType: Prefix
+                  
+        # Add hostname to /etc/hosts: 127.0.0.1 frontend.local
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: sock-shop
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true
+  revisionHistoryLimit: 3 

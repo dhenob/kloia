@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: multus-bridge-pod
+  namespace: sock-shop
+  annotations:
+    k8s.v1.cni.cncf.io/networks: bridge-conf
+spec:
+  containers:
+  - name: multus-bridge-container
+    image: nicolaka/netshoot
+    command: ["sleep", "3600"]
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    securityContext:
+      capabilities:
+        add: ["NET_ADMIN"]  # This allows the container to configure network interfaces 

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: network-test-app
+  namespace: sock-shop
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: network-test-app
+  template:
+    metadata:
+      labels:
+        app: network-test-app
+    spec:
+      containers:
+      - name: network-test-app
+        image: nicolaka/netshoot
+        command: ["sleep", "infinity"]
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: network-test-app
+  namespace: sock-shop
+spec:
+  selector:
+    app: network-test-app
+  ports:
+  - port: 80
+    targetPort: 8080
+  type: ClusterIP 

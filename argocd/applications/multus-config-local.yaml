@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: multus-network
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    app.kubernetes.io/part-of: sock-shop
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/dhenob/kloia.git
+    targetRevision: HEAD
+    path: network-configs
+    directory:
+      recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: sock-shop
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true
+  revisionHistoryLimit: 3 
