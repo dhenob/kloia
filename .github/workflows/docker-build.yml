@@ -21,7 +21,7 @@ jobs:
   build-scan-push:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       security-events: write
       packages: write
     
@@ -107,6 +107,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       
       - name: Push Docker image
+        id: push
         if: github.event_name != 'pull_request'
         uses: docker/build-push-action@v5
         with:
@@ -116,4 +117,42 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max 
+          cache-to: type=gha,mode=max
+      
+      # Trigger GitOps update (CD) by updating the Helm chart values
+      - name: Extract image tag
+        if: github.event_name != 'pull_request' && steps.push.outcome == 'success'
+        id: extract_tag
+        run: |
+          # Extract short SHA for commit-based tag
+          SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-7)
+          
+          # Set image tag based on the event type
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            TAG="${{ github.ref_name }}"
+          elif [[ "${{ github.ref_name }}" == "main" || "${{ github.ref_name }}" == "master" ]]; then
+            TAG="${{ github.ref_name }}"
+          else
+            TAG="sha-${SHORT_SHA}"
+          fi
+          
+          echo "IMAGE_TAG=${TAG}" >> $GITHUB_OUTPUT
+          echo "Using image tag: ${TAG}"
+      
+      - name: Update Helm values
+        if: github.event_name != 'pull_request' && steps.push.outcome == 'success'
+        run: |
+          # Update the image tag in the values.yaml
+          sed -i "s/tag: .*  # This will be updated by the CI\/CD pipeline/tag: ${{ steps.extract_tag.outputs.IMAGE_TAG }}  # This will be updated by the CI\/CD pipeline/" helm-chart/frontend/values.yaml
+          
+          # Display the updated values file
+          cat helm-chart/frontend/values.yaml
+      
+      - name: Commit changes
+        if: github.event_name != 'pull_request' && steps.push.outcome == 'success'
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          git add helm-chart/frontend/values.yaml
+          git commit -m "Update image tag to ${{ steps.extract_tag.outputs.IMAGE_TAG }}"
+          git push 

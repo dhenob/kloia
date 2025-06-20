@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: sock-shop
+  name: frontend
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -12,13 +12,7 @@ spec:
   source:
     repoURL: https://github.com/dhenob/kloia.git
     targetRevision: HEAD
-    path: microservices-demo/deploy/kubernetes/helm-chart
-    helm:
-      valueFiles:
-        - ../../../../helm-values/sock-shop/values.yaml
-      parameters:
-        - name: "frontend.image.tag"
-          value: "latest"
+    path: helm-chart/frontend
   destination:
     server: https://kubernetes.default.svc
     namespace: sock-shop
